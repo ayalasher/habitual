@@ -1,7 +1,9 @@
+import { MdOutlineAttractions } from "react-icons/md";
+
 export default function FocusScreen() {
   return (
-    <div>
-      <p>Focus Screen</p>
+    <div className="flex flex-row">
+      <p>focus screen</p>
     </div>
   );
 }
