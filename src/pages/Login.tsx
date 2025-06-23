@@ -103,7 +103,7 @@ export default function LogInScreen() {
               <button
                 type="submit"
                 onClick={loginHandler}
-                className=" bg-blue-200 rounded-4xl px-2 py-2 hover:bg-blue-400 "
+                className=" bg-blue-400 rounded-4xl px-2 py-2 hover:bg-blue-400 "
               >
                 Login
               </button>

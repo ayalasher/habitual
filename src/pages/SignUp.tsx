@@ -163,7 +163,7 @@ export default function SignUpScreen() {
               <button
                 type="submit"
                 onClick={signUpHandler}
-                className=" bg-blue-200 rounded-4xl px-2 py-2 hover:bg-blue-400 "
+                className=" bg-blue-400 rounded-4xl px-2 py-2 hover:bg-blue-700 "
               >
                 Sign Up
               </button>
