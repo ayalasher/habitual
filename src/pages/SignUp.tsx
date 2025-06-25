@@ -5,14 +5,25 @@ import { FaEye } from "react-icons/fa6";
 import { FaEyeSlash } from "react-icons/fa";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { app } from "../utils/Firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../utils/Firebase";
+
+interface UserdataInterface {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+  termsAgreed: boolean;
+}
 
 export default function SignUpScreen() {
   const auth = getAuth();
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<UserdataInterface>({
     fullName: "",
     email: "",
+    phoneNumber: "",
     password: "",
     confirmPassword: "",
     termsAgreed: false,
@@ -34,6 +45,7 @@ export default function SignUpScreen() {
     if (
       userData.fullName === "" ||
       userData.email === "" ||
+      userData.phoneNumber === "" ||
       userData.password === "" ||
       userData.confirmPassword === ""
     ) {
@@ -44,7 +56,22 @@ export default function SignUpScreen() {
     createUserWithEmailAndPassword(auth, userData.email, userData.password)
       .then((userCredential) => {
         const user = userCredential.user;
-        navigate("/Home");
+
+        try {
+          setDoc(doc(db, "Users", user.uid), {
+            fullName: userData.fullName,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber,
+            termsAgreed: userData.termsAgreed,
+            createdAt: new Date().toISOString(), // Adding time
+          });
+
+          toast.success("Account created successfully !");
+          navigate("/Home");
+        } catch (error: any) {
+          toast.error(`${error.message}`);
+        }
+
         // ...
       })
       .catch((error) => {
@@ -58,12 +85,12 @@ export default function SignUpScreen() {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-12/12  ">
       <div className="mx-2 my-4">
         <p className="font-mono font-bold text-4xl ">Create Your Account</p>
       </div>
 
-      <div className="w-12/12 flex flex-col ">
+      <div className=" flex flex-col w-8/12 ">
         <form action="">
           <fieldset className="flex flex-col items-center">
             <div className="flex flex-col mx-1 my-2 w-5/12 ">
@@ -95,6 +122,23 @@ export default function SignUpScreen() {
                 value={userData.email}
                 onChange={(e) =>
                   setUserData({ ...userData, email: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="flex flex-col mx-1 my-2 w-5/12 ">
+              <label className="mx-1 my-2 font-bold text-xl " htmlFor="">
+                Phone Number
+              </label>
+
+              <input
+                className="  border-2 px-2 py-1 rounded-lg border-gray-300 "
+                type="text"
+                required
+                placeholder="Enter your Phone Number"
+                value={userData.phoneNumber}
+                onChange={(e) =>
+                  setUserData({ ...userData, phoneNumber: e.target.value })
                 }
               />
             </div>

@@ -9,10 +9,7 @@ interface Quote {
 }
 
 export default function HomeScreen() {
-  const [todaysQuote, setTodaysquote] = useState({
-    author: "",
-    text: "",
-  });
+  const [todaysQuote, setTodaysquote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -51,8 +48,8 @@ export default function HomeScreen() {
           Today's Inspiration
         </p>
         {loading ? (
-          <p>Loading...</p>
-        ) : (
+          <p className="text-center">Loading...</p>
+        ) : todaysQuote ? (
           <div>
             <p className="text-center"> " {todaysQuote.text} " </p>
             <p className="text-center font-semibold italic   ">
@@ -60,6 +57,8 @@ export default function HomeScreen() {
               {todaysQuote.author}{" "}
             </p>
           </div>
+        ) : (
+          <p className="text-center">No quote available</p>
         )}
       </div>
 

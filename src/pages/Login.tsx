@@ -5,8 +5,14 @@ import { FaEye } from "react-icons/fa6";
 import { FaEyeSlash } from "react-icons/fa";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+
+interface userDataInterface {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
 export default function LogInScreen() {
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<userDataInterface>({
     email: "",
     password: "",
     rememberMe: false,

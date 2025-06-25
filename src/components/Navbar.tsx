@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <div className="flex flex-row w-screen items-center justify-between border-2 border-gray-200 ">
+    <div className="flex flex-row  items-center justify-between border-2 border-gray-200 ">
       <div className=" flex flex-row justify-start items-start ">
         <div className="flex flex-row items-center justify-center px-1 py-2 mx-2 my-4 ">
           <MdOutlineAttractions size={45} color="#47b4ea" />
