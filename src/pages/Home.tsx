@@ -52,7 +52,7 @@ export default function HomeScreen() {
     }
   }, []);
   return (
-    <div className="flex flex-col w-12/12">
+    <div className="flex flex-col w-12/12  h-screen  ">
       <div>
         <p className="text-center font-bold text-3xl font-mono my-3 px-2 py-2 ">
           Today's Inspiration
@@ -71,13 +71,14 @@ export default function HomeScreen() {
           <p className="text-center">No quote available</p>
         )}
       </div>
-
-      <div>
-        <div>
-          <p>My goals</p>
-        </div>
-        <div>
-          <p>Goals set here</p>
+      <div className="flex flex-col items-center">
+        <div className=" w-8/12  ">
+          <div>
+            <p className="font-bold text-3xl font-mono ">My goals</p>
+          </div>
+          <div>
+            <p>Goals set here</p>
+          </div>
         </div>
       </div>
     </div>
