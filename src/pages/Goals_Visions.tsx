@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../utils/Firebase";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ export default function GoalsVisionsScreen() {
     title: "",
     Description: "",
   });
+  const [goals, setGoals] = useState<newGoal[]>([]);
   const navigate = useNavigate();
   const auth = getAuth();
   const currentUserData = auth.currentUser;
@@ -47,6 +48,30 @@ export default function GoalsVisionsScreen() {
       navigate("/");
     }
   }
+  useEffect(() => {
+    async function getUserGoals(userID: string) {
+      try {
+        const docRef = collection(db, "Users", userID, "Goals");
+        const docSnap = await getDocs(docRef);
+        const userGoals: newGoal[] = [];
+        docSnap.forEach((doc) => {
+          userGoals.push({
+            title: doc.data().title,
+            Description: doc.data().Description,
+          } as newGoal);
+        });
+        setGoals(userGoals);
+        console.log(userGoals);
+      } catch (error) {
+        toast.error("Error fetching user goals . Please try again later.");
+      }
+    }
+    if (currentUserId) {
+      getUserGoals(currentUserId);
+    } else {
+      toast.error("User is not authenticated");
+    }
+  }, [currentUserId]);
   return (
     <div className="h-screen  flex flex-col items-center ">
       <div className="w-10/12 ">
@@ -104,6 +129,12 @@ export default function GoalsVisionsScreen() {
                 >
                   Add goal
                 </button>
+              </div>
+
+              <div className="flex flex-col  ">
+                <p className="font-bold text-2xl font-mono py-2 my-4 ">
+                  My goals
+                </p>
               </div>
             </div>
           </fieldset>

@@ -43,9 +43,6 @@ export default function HomeScreen() {
           toast.error(`An error occured getting today's inspiration.`);
         }
       }
-
-      // const api_url = "https://zenquotes.io/api/today/";
-      toast.error(`${currentUser.uid}`)
       getapi();
     } else {
       toast.error("You must be logged in to view the homepage");
@@ -64,8 +61,7 @@ export default function HomeScreen() {
           <div>
             <p className="text-center"> " {todaysQuote.text} " </p>
             <p className="text-center font-semibold italic   ">
-              {" "}
-              {todaysQuote.author}{" "}
+              {todaysQuote.author}
             </p>
           </div>
         ) : (
