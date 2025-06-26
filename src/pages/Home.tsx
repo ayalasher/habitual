@@ -45,6 +45,7 @@ export default function HomeScreen() {
       }
 
       // const api_url = "https://zenquotes.io/api/today/";
+      toast.error(`${currentUser.uid}`)
       getapi();
     } else {
       toast.error("You must be logged in to view the homepage");
