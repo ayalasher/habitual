@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 
 interface Quote {
   author: string;
@@ -56,7 +57,9 @@ export default function HomeScreen() {
           Today's Inspiration
         </p>
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="flex flex-col items-center w-11/12 justify-center">
+            <BeatLoader />
+          </div>
         ) : todaysQuote ? (
           <div>
             <p className="text-center"> " {todaysQuote.text} " </p>

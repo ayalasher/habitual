@@ -4,6 +4,7 @@ import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 
 interface newGoal {
   title: string;
@@ -15,6 +16,7 @@ export default function GoalsVisionsScreen() {
     title: "",
     Description: "",
   });
+  const [loading, setLoading] = useState<boolean>(true);
   const [goals, setGoals] = useState<newGoal[]>([]);
   const navigate = useNavigate();
   const auth = getAuth();
@@ -48,7 +50,39 @@ export default function GoalsVisionsScreen() {
       navigate("/");
     }
   }
+
+  function GoalsComponent() {
+    if (loading) {
+      return (
+        <div className="flex flex-col items-center w-11/12 justify-center">
+          <BeatLoader />
+        </div>
+      );
+    }
+
+    if (goals.length === 0) {
+      return (
+        <div className="text-center py-4">
+          <p className="text-gray-500">No Goals yet. Add your first goal 👆🏼</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-4">
+        {goals.map((goal, index) => (
+          <div
+            key={index}
+            className="border-2 border-gray-300 rounded-md p-4 my-2"
+          >
+            <h3 className="font-bold text-lg">{goal.title}</h3>
+            <p className="text-gray-600">{goal.Description}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
   useEffect(() => {
+    setLoading(true);
     async function getUserGoals(userID: string) {
       try {
         const docRef = collection(db, "Users", userID, "Goals");
@@ -61,6 +95,7 @@ export default function GoalsVisionsScreen() {
           } as newGoal);
         });
         setGoals(userGoals);
+        setLoading(false);
         console.log(userGoals);
       } catch (error) {
         toast.error("Error fetching user goals . Please try again later.");
@@ -135,6 +170,7 @@ export default function GoalsVisionsScreen() {
                 <p className="font-bold text-2xl font-mono py-2 my-4 ">
                   My goals
                 </p>
+                <GoalsComponent />
               </div>
             </div>
           </fieldset>
