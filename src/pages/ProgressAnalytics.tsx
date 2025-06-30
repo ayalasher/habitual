@@ -1,7 +1,17 @@
 export default function ProgressAnalyticsScreen() {
   return (
-    <div>
-      <p>Progress and analytics Screen</p>
+    <div className="flex flex-col items-center h-screen w-12/12 ">
+      <div className="flex flex-col w-8/12">
+        <p className="font-bold text-3xl py-2 my-2 font-mono ">
+          Progress and analytics.
+        </p>
+        <p className="text-gray-400 font-medium font-mono">
+          Track your progress and identify areas for improvement.
+        </p>
+      </div>
+      <div className="flex flex-col w-8/12">
+        {/* <p className="font-bold text-xl py-4 my-4 font-mono ">Today's Tasks</p> */}
+      </div>
     </div>
   );
 }
