@@ -2,23 +2,62 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
+import { db } from "../utils/Firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 interface Quote {
   author: string;
   text: string;
 }
 
+interface newGoal {
+  title: string;
+  Description: string;
+}
+
 export default function HomeScreen() {
   const [todaysQuote, setTodaysquote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(false);
+  const [goals, setGoals] = useState<newGoal[]>([]);
   const auth = getAuth();
   const navigate = useNavigate();
   const currentUser = auth.currentUser;
   const url = import.meta.env.VITE_URL;
   const x_rapidapi_key = import.meta.env.VITE_X_RAPID_API_KEY;
   const x_rapidapi_host = import.meta.env.VITE_X_RAPID_API_HOST;
+
+  function GoalsComponent() {
+    if (loading) {
+      return (
+        <div className="flex flex-col items-center w-11/12 justify-center">
+          <BeatLoader />
+        </div>
+      );
+    }
+
+    if (goals.length === 0) {
+      return (
+        <div className="text-center py-4">
+          <p className="text-gray-500">No Goals yet. Add your first goal 👆🏼</p>
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-4">
+        {goals.map((goal, index) => (
+          <div
+            key={index}
+            className="border-2 border-gray-300 rounded-md p-4 my-2"
+          >
+            <h3 className="font-bold text-lg">{goal.title}</h3>
+            <p className="text-gray-600">{goal.Description}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (currentUser) {
@@ -44,7 +83,27 @@ export default function HomeScreen() {
           toast.error(`An error occured getting today's inspiration.`);
         }
       }
+
+      async function getGoals(userID: string) {
+        try {
+          const docRef = collection(db, "Users", userID, "Goals");
+          const docSnap = await getDocs(docRef);
+          const userGoals: newGoal[] = [];
+          docSnap.forEach((doc) => {
+            userGoals.push({
+              title: doc.data().title,
+              Description: doc.data().Description,
+            } as newGoal);
+          });
+          setGoals(userGoals);
+        } catch (error) {
+          toast.error(
+            "An error occurred when fetching goals . Refresh the page to try again ."
+          );
+        }
+      }
       getapi();
+      getGoals(currentUser.uid);
     } else {
       toast.error("You must be logged in to view the homepage");
       navigate("/");
@@ -73,11 +132,16 @@ export default function HomeScreen() {
       </div>
       <div className="flex flex-col items-center">
         <div className=" w-8/12  ">
-          <div>
+          <div className="flex flex-row items-center justify-between">
             <p className="font-bold text-3xl font-mono ">My goals</p>
+            <Link to={"/Focus"}>
+              <button className="py-3 my-3 px-4 text-center bg-blue-400 rounded-lg">
+                Focus 🚀
+              </button>
+            </Link>
           </div>
           <div>
-            <p>Goals set here</p>
+            <GoalsComponent />
           </div>
         </div>
       </div>

@@ -96,7 +96,7 @@ export default function GoalsVisionsScreen() {
         });
         setGoals(userGoals);
         setLoading(false);
-        console.log(userGoals);
+        // console.log(userGoals);
       } catch (error) {
         toast.error("Error fetching user goals . Please try again later.");
       }
