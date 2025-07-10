@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../utils/Firebase";
-import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -9,12 +9,16 @@ import { BeatLoader } from "react-spinners";
 interface newGoal {
   title: string;
   Description: string;
+  unitsToBeCompleted?: number;
+  unitsCompleted?: number;
 }
 
 export default function GoalsVisionsScreen() {
   const [newGoal, setNewGoal] = useState<newGoal>({
     title: "",
     Description: "",
+    unitsToBeCompleted: 0,
+    unitsCompleted: 0,
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [goals, setGoals] = useState<newGoal[]>([]);
@@ -37,7 +41,12 @@ export default function GoalsVisionsScreen() {
         const docRef = await addDoc(goals_reference, habitData);
         if (docRef) {
           toast.success("New goal added succesfully.");
-          setNewGoal({ title: "", Description: "" });
+          setNewGoal({
+            title: "",
+            Description: "",
+            unitsToBeCompleted: 0,
+            unitsCompleted: 0,
+          });
         }
       } catch (error: any) {
         toast.error("Error adding a new goal Goal.Try again.");

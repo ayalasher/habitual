@@ -78,7 +78,7 @@ export default function HomeScreen() {
           const response = await axios.request(options);
           setTodaysquote(response.data);
           setLoading(false);
-        } catch (error: any) {
+        } catch (error: unknown) {
           setLoading(false);
           toast.error(`An error occured getting today's inspiration.`);
         }

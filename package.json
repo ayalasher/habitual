@@ -19,6 +19,7 @@
     "react-loading": "^2.0.3",
     "react-router-dom": "^7.6.2",
     "react-spinners": "^0.17.0",
+    "react-timer-hook": "^4.0.5",
     "react-toastify": "^11.0.5",
     "tailwindcss": "^4.1.10"
   },
