@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { FaEye } from "react-icons/fa6";
-import { FaEyeSlash } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaCheckCircle } from "react-icons/fa";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 
 interface userDataInterface {
   email: string;
@@ -22,22 +23,24 @@ export default function LogInScreen() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   function loginHandler(e: React.FormEvent) {
     e.preventDefault();
-
+    if (loading) return;
     if (userData.email === "" || userData.password === "") {
       toast.error("Email and password must be filled out.");
       return;
     }
-
+    setLoading(true);
     signInWithEmailAndPassword(auth, userData.email, userData.password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+      .then(() => {
         navigate("/Home");
       })
       .catch((error) => {
-        toast.error(`Error:${error.message}`);
-      });
+        toast.error(error.message || "Login failed");
+      })
+      .finally(() => setLoading(false));
   }
 
   function showPasswordHandler() {
@@ -45,92 +48,129 @@ export default function LogInScreen() {
     toast.info("Password visibility toggled");
   }
   return (
-    <div className="flex flex-col items-center">
-      <div className="mx-2 my-4">
-        <p className="font-mono font-bold text-4xl ">Welcome back</p>
-      </div>
-
-      <div className="w-12/12 flex flex-col ">
-        <form action="">
-          <fieldset className="flex flex-col items-center">
-            <div className="flex flex-col mx-1 my-2 w-5/12 ">
-              <label className="mx-1 my-2 font-bold text-xl " htmlFor="">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 flex items-center justify-center px-4 py-10 relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.25),transparent_60%),radial-gradient(circle_at_70%_70%,rgba(99,102,241,0.25),transparent_55%)]" />
+      <div className="relative w-full max-w-md">
+        <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-8 md:p-10 space-y-8 text-slate-100">
+          <header className="space-y-2 text-center">
+            <h1 className="font-mono font-bold text-3xl tracking-tight">
+              Welcome back
+            </h1>
+            <p className="text-sm text-slate-300">
+              Sign in to continue your progress journey.
+            </p>
+          </header>
+          <form onSubmit={loginHandler} className="space-y-6">
+            <div className="space-y-2">
+              <label
+                htmlFor="loginEmail"
+                className="text-sm font-semibold tracking-wide"
+              >
                 Email
               </label>
               <input
-                className="  border-2 px-2 py-1 rounded-lg border-gray-300 "
+                id="loginEmail"
                 type="email"
                 required
-                placeholder="Enter your email"
+                autoComplete="email"
+                placeholder="you@example.com"
                 value={userData.email}
                 onChange={(e) =>
                   setUserData({ ...userData, email: e.target.value })
                 }
+                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm placeholder-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                disabled={loading}
               />
             </div>
-            <div className="flex flex-col mx-1 my-2 w-5/12  ">
-              <label className="mx-1 my-2 font-bold text-xl " htmlFor="">
-                password
+            <div className="space-y-2">
+              <label
+                htmlFor="loginPassword"
+                className="text-sm font-semibold tracking-wide"
+              >
+                Password
               </label>
-
-              <div className="flex flex-row items-center ">
+              <div className="relative">
                 <input
-                  className="  border-2 px-2 py-1 rounded-lg border-gray-300 w-12/12 "
+                  id="loginPassword"
                   type={showPassword ? "text" : "password"}
                   required
-                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  placeholder="Enter password"
                   value={userData.password}
                   onChange={(e) =>
                     setUserData({ ...userData, password: e.target.value })
                   }
+                  className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 pr-10 text-sm placeholder-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                  disabled={loading}
                 />
-                <div onClick={showPasswordHandler}>
+                <button
+                  type="button"
+                  onClick={showPasswordHandler}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-200"
+                  disabled={loading}
+                >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </div>
+                </button>
               </div>
             </div>
-
-            <div className="flex flex-row mx-1 my-2 w-5/12  ">
-              <input
-                className="mx-1 my-2 font-bold text-2xl "
-                type="checkbox"
-                required
-                checked={userData.rememberMe}
-                onChange={(e) =>
-                  setUserData({ ...userData, rememberMe: e.target.checked })
-                }
-              />
-              <label className="mx-1 my-2 font-bold text-xl " htmlFor="">
-                Remember Me
+            <div className="flex items-center justify-between text-xs">
+              <label className="inline-flex items-center gap-2 select-none">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-blue-600 focus:ring-blue-500/40"
+                  checked={userData.rememberMe}
+                  onChange={(e) =>
+                    setUserData({ ...userData, rememberMe: e.target.checked })
+                  }
+                  disabled={loading}
+                />
+                <span className="text-slate-300">Remember me</span>
               </label>
+              <Link
+                to="/recover-password"
+                className="text-blue-300 hover:text-blue-200"
+              >
+                Forgot password?
+              </Link>
             </div>
-
-            <div className="flex flex-col mx-1 my-2 w-5/12  ">
+            <div className="space-y-4">
               <button
                 type="submit"
-                onClick={loginHandler}
-                className=" bg-blue-400 rounded-4xl px-2 py-2 hover:bg-blue-400 "
+                disabled={loading}
+                className="relative inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 transition hover:from-blue-500 hover:to-indigo-500 disabled:opacity-60"
               >
-                Login
+                {loading && <BeatLoader size={8} color="#fff" />}
+                <span>{loading ? "Signing in..." : "Sign In"}</span>
               </button>
+              <p className="text-center text-xs text-slate-400">
+                No account?{" "}
+                <Link
+                  to="/SignUp"
+                  className="text-blue-300 hover:text-blue-200 font-medium"
+                >
+                  Create one
+                </Link>
+              </p>
             </div>
-
-            <div className="flex flex-col mx-1 my-2 w-5/12  ">
-              <Link
-                to={"/recover-password"}
-                className="text-gray-500 text-center  hover:text-blue-500 "
-              >
-                Forgot password.
-              </Link>
-              <Link
-                to={"/SignUp"}
-                className="text-gray-500 text-center  hover:text-blue-500 "
-              >
-                Don't have an account ? Sign up
-              </Link>
+          </form>
+          <div className="grid grid-cols-3 gap-4 text-center text-[10px] text-slate-400 pt-2">
+            <div className="flex items-center justify-center gap-1">
+              <FaCheckCircle className="text-blue-400" /> Goals
             </div>
-          </fieldset>
-        </form>
+            <div className="flex items-center justify-center gap-1">
+              <FaCheckCircle className="text-blue-400" /> Focus
+            </div>
+            <div className="flex items-center justify-center gap-1">
+              <FaCheckCircle className="text-blue-400" /> Insights
+            </div>
+          </div>
+          {loading && (
+            <div className="absolute inset-0 rounded-3xl backdrop-blur-sm bg-slate-900/20 flex items-center justify-center">
+              <BeatLoader color="#fff" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import FriendsScreen from "./pages/Friends";
 import Navbar from "./components/Navbar";
 import ForgotPasswordScreen from "./pages/ForgotPassword";
 import Error404Screen from "./pages/Error404";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Bounce } from "react-toastify";
 
@@ -35,7 +35,7 @@ function App() {
         <Route path="*" element={<Error404Screen />} />
       </Routes>
       <ToastContainer
-        position="top-right"
+        position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
