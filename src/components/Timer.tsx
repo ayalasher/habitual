@@ -1,102 +1,90 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
+import { useTimer } from "react-timer-hook";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
-const Timer = () => {
-  const [minutes, setMinutes] = useState<number>(25); // default value
-  const [seconds, setSeconds] = useState<number>(0);
-  const [isRunning, setIsRunning] = useState<boolean>(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleStart = () => {
-    if (!isRunning) {
-      setIsRunning(true);
-    }
-  };
-
-  const handlePause = () => {
-    setIsRunning(false);
-  };
-
-  const handleReset = () => {
-    setIsRunning(false);
-    setMinutes(25);
-    setSeconds(0);
-  };
-
-  const handleCustomTime = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const customMinutes = Number(formData.get("customMinutes"));
-    setMinutes(customMinutes);
-    setSeconds(0);
-    setIsRunning(false);
-  };
-
-  useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setSeconds((prevSeconds) => {
-          if (prevSeconds === 0) {
-            if (minutes === 0) {
-              clearInterval(intervalRef.current!);
-              setIsRunning(false);
-              return 0;
-            } else {
-              setMinutes((prev) => prev - 1);
-              return 59;
-            }
-          }
-          return prevSeconds - 1;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(intervalRef.current!);
-  }, [isRunning, minutes]);
-
+function MyTimer({ expiryTimestamp }: any) {
+  const {
+    totalSeconds,
+    milliseconds,
+    seconds,
+    minutes,
+    hours,
+    days,
+    isRunning,
+    start,
+    pause,
+    resume,
+    restart,
+  } = useTimer({
+    expiryTimestamp,
+    onExpire: () => console.warn("onExpire called"),
+    interval: 20,
+  });
+  const [Timerminutes, setTimerMinutes] = useState<number>(0);
   return (
-    <div className="p-4 text-center">
-      <h2 className="text-4xl font-bold">
-        {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-      </h2>
-
-      <div className="space-x-2 mt-4">
-        <button
-          onClick={handleStart}
-          className="bg-green-500 px-4 py-2 rounded text-white"
-        >
-          Start
-        </button>
-        <button
-          onClick={handlePause}
-          className="bg-yellow-500 px-4 py-2 rounded text-white"
-        >
-          Pause
-        </button>
-        <button
-          onClick={handleReset}
-          className="bg-red-500 px-4 py-2 rounded text-white"
-        >
-          Reset
-        </button>
-      </div>
-
-      <form onSubmit={handleCustomTime} className="mt-4">
+    <div style={{ textAlign: "center" }}>
+      <div>
+        <label className="px-2 mx-2 font-semibold text-2xl " htmlFor="Minutes">
+          Minutes
+        </label>
         <input
-          name="customMinutes"
+          className="border-2 border-gray-300 py-4 px-2 mx-2 rounded-2xl"
           type="number"
-          min={1}
-          className="border px-2 py-1"
-          placeholder="Minutes"
+          placeholder="Enter"
+          value={Timerminutes}
+          // Setting e.target.value as a number
+          onChange={(e) => setTimerMinutes(Number(e.target.value))}
         />
-        <button
-          type="submit"
-          className="ml-2 bg-blue-500 px-4 py-1 rounded text-white"
-        >
-          Set
-        </button>
-      </form>
+        <div>
+          <p>
+            Set the number of minutes you would like to work on an item click
+            restart
+          </p>
+        </div>
+      </div>
+      <div style={{ fontSize: "100px" }}>
+        {/* <span>{days}</span>:<span>{hours}</span>: */}
+        <span>{minutes}</span>:<span>{seconds}</span>
+      </div>
+      <p>{isRunning ? "Running" : "Not running"}</p>
+
+      <button
+        className="px-4 py-2 mx-4 my-2 bg-blue-400 rounded-3xl "
+        onClick={pause}
+      >
+        Pause
+      </button>
+      <button
+        className="px-4 py-2 mx-4 my-2 bg-blue-400 rounded-3xl "
+        onClick={resume}
+      >
+        Resume
+      </button>
+      <button
+        className="px-4 py-2 mx-4 my-2 bg-blue-400 rounded-3xl "
+        onClick={() => {
+          // Restarts to 5 minutes timer
+          const time = new Date();
+          if (Timerminutes === 0) {
+            toast.error("Minutes cannot be 0.");
+          }
+          time.setSeconds(time.getSeconds() + Timerminutes * 60);
+          restart(time);
+        }}
+      >
+        Start timer
+      </button>
     </div>
   );
-};
+}
 
-export default Timer;
+export default function TimerComponent() {
+  const time = new Date();
+  // time.setSeconds(time.getSeconds() + 600); // 10 minutes timer
+  return (
+    <div>
+      <MyTimer expiryTimestamp={time} />
+    </div>
+  );
+}
